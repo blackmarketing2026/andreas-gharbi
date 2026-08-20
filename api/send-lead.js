@@ -1,6 +1,14 @@
 const nodemailer = require("nodemailer");
 const { buildLeadEmailHtml } = require("./email-template");
 
+// Renders quiz answers as plain-text Q&A lines for the text/plain fallback.
+function formatAnswersText(answers) {
+  const pairs = Array.isArray(answers)
+    ? answers.map((a) => [a && a.question, a && a.answer])
+    : Object.entries(answers || {});
+  return pairs.map(([q, a]) => `  - ${q}: ${a}`).join("\n");
+}
+
 module.exports = async (req, res) => {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
@@ -50,7 +58,7 @@ module.exports = async (req, res) => {
     car ? `Fahrzeug: ${car}` : null,
     time ? `Wunschzeit: ${time}` : null,
     message ? `Nachricht: ${message}` : null,
-    answers ? `Antworten: ${JSON.stringify(answers, null, 2)}` : null,
+    answers ? `Antworten:\n${formatAnswersText(answers)}` : null,
   ].filter(Boolean);
 
   try {

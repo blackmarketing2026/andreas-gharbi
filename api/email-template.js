@@ -37,6 +37,28 @@ function buildRow(label, value) {
     </tr>`;
 }
 
+// Renders quiz answers as a readable Q&A list. Accepts either an array of
+// { question, answer } pairs or a plain { key: value } object.
+function buildAnswersHtml(answers) {
+  if (!answers) return null;
+
+  const pairs = Array.isArray(answers)
+    ? answers.map((a) => [a && a.question, a && a.answer])
+    : Object.entries(answers);
+
+  if (!pairs.length) return null;
+
+  return pairs
+    .map(
+      ([question, answer]) => `
+        <div style="margin:0 0 10px 0;">
+          <div style="color:#9fb0c7;font-family:Arial,Helvetica,sans-serif;font-size:13px;">${escapeHtml(question)}</div>
+          <div style="color:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;">${escapeHtml(answer)}</div>
+        </div>`
+    )
+    .join("");
+}
+
 function buildLeadEmailHtml({ type, name, email, phone, message, car, answers, time }) {
   const typeLabel = TYPE_LABELS[type] || "Website-Anfrage";
   const phoneDigits = normalizePhone(phone);
@@ -44,9 +66,7 @@ function buildLeadEmailHtml({ type, name, email, phone, message, car, answers, t
   const waHref = phoneDigits ? `https://wa.me/${phoneDigits}` : null;
   const mailHref = email ? `mailto:${encodeURIComponent(email)}` : null;
 
-  const answersHtml = answers && Object.keys(answers).length
-    ? `<pre style="margin:0;white-space:pre-wrap;font-family:Consolas,Menlo,monospace;font-size:13px;color:#ffffff;">${escapeHtml(JSON.stringify(answers, null, 2))}</pre>`
-    : null;
+  const answersHtml = buildAnswersHtml(answers);
 
   const rows = [
     buildRow("Name", escapeHtml(name)),
