@@ -13,6 +13,17 @@ module.exports = async (req, res) => {
     return;
   }
 
+  const missing = ["smtp_server", "smtp_benutzer", "smtp_passwort", "smtp_absender"].filter(
+    (k) => !process.env[k]
+  );
+  if (missing.length) {
+    res.status(500).json({
+      error: "SMTP nicht konfiguriert.",
+      debug: process.env.SEND_LEAD_DEBUG === "1" ? { missing } : undefined,
+    });
+    return;
+  }
+
   const transporter = nodemailer.createTransport({
     host: process.env.smtp_server,
     port: 587,
@@ -52,6 +63,9 @@ module.exports = async (req, res) => {
     res.status(200).json({ ok: true });
   } catch (err) {
     console.error("send-lead error:", err);
-    res.status(500).json({ error: "E-Mail konnte nicht gesendet werden." });
+    res.status(500).json({
+      error: "E-Mail konnte nicht gesendet werden.",
+      debug: process.env.SEND_LEAD_DEBUG === "1" ? { code: err.code, message: err.message } : undefined,
+    });
   }
 };
