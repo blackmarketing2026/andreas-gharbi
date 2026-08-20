@@ -54,7 +54,7 @@ module.exports = async (req, res) => {
 
   try {
     await transporter.sendMail({
-      from: process.env.smtp_absender,
+      from: process.env.smtp_benutzer,
       to: process.env.smtp_absender,
       replyTo: email || undefined,
       subject: `${subject} – ${name}`,
