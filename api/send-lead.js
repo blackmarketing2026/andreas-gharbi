@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const { buildLeadEmailHtml } = require("./email-template");
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") {
@@ -59,6 +60,7 @@ module.exports = async (req, res) => {
       replyTo: email || undefined,
       subject: `${subject} – ${name}`,
       text: lines.join("\n"),
+      html: buildLeadEmailHtml({ type, name, email, phone, message, car, answers, time }),
     });
     res.status(200).json({ ok: true });
   } catch (err) {
