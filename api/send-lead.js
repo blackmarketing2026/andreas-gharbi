@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const missing = ["smtp_server", "smtp_benutzer", "smtp_passwort", "smtp_absender"].filter(
+  const missing = ["smtp_server", "smtp_benutzer", "smtp_passwort", "smtp_empfaenger"].filter(
     (k) => !process.env[k]
   );
   if (missing.length) {
@@ -55,7 +55,7 @@ module.exports = async (req, res) => {
   try {
     await transporter.sendMail({
       from: process.env.smtp_benutzer,
-      to: process.env.smtp_absender,
+      to: process.env.smtp_empfaenger,
       replyTo: email || undefined,
       subject: `${subject} – ${name}`,
       text: lines.join("\n"),
