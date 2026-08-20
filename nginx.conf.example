@@ -1,0 +1,19 @@
+# Beispiel-Snippet fuer den Nginx server{}-Block dieser Seite.
+# Sorgt dafuer, dass Client-seitige Routen (z.B. /impressum, /kontakt, /blog)
+# ebenfalls auf index.html ausgeliefert werden.
+
+server {
+    listen 80;
+    server_name DEINE-DOMAIN.de;
+    root /var/www/ag-kfz-sachverstaendiger/website;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    location /assets/ {
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+    }
+}
